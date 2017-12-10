@@ -10,7 +10,6 @@ namespace Pubs.Repositorios.MongoDb
     public abstract class RepositorioBase<T> where T: EntidadeBase
     {
         protected IMongoCollection<T> _colecao;
-        //private IMongoDatabase _db;
 
         protected RepositorioBase()
         {
