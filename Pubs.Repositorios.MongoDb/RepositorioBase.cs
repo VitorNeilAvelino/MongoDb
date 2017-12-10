@@ -1,25 +1,49 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using Pubs.Dominio;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pubs.Repositorios.MongoDb
 {
-    public class RepositorioBase<T>
+    public abstract class RepositorioBase<T> where T: EntidadeBase
     {
-        private IMongoCollection<T> _colecao;
-        private IMongoDatabase _db;
+        protected IMongoCollection<T> _colecao;
+        //private IMongoDatabase _db;
 
-        public RepositorioBase()
+        protected RepositorioBase()
         {
             var connectionString = ConfigurationManager.ConnectionStrings["pubsConnectionString"].ConnectionString;
             var databaseName = MongoUrl.Create(connectionString).DatabaseName;
 
-            _db = new MongoClient(connectionString).GetDatabase(databaseName);
-            _colecao = _db.GetCollection<T>(typeof(T).Name);
+            var db = new MongoClient(connectionString).GetDatabase(databaseName);
+            _colecao = db.GetCollection<T>(typeof(T).Name);
+        }
+
+        protected void Inserir(T entidade)
+        {
+            _colecao.InsertOne(entidade);
+        }
+
+        protected List<T> Selecionar()
+        {
+            return _colecao.Find(new BsonDocument()).ToList();
+        }
+
+        protected T Selecionar(Guid guid)
+        {
+            return _colecao.Find(e => e.Id == guid).SingleOrDefault();
+        }
+
+        protected void Atualizar(T entidade)
+        {
+            _colecao.ReplaceOne(e => e.Id == entidade.Id, entidade);
+        }
+
+        protected void Excluir(Guid guid)
+        {
+            _colecao.DeleteOne(e => e.Id == guid);
         }
     }
 }
