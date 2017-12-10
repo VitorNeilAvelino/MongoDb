@@ -21,27 +21,27 @@ namespace Pubs.Repositorios.MongoDb
             _colecao = db.GetCollection<T>(typeof(T).Name);
         }
 
-        protected void Inserir(T entidade)
+        public void Inserir(T entidade)
         {
             _colecao.InsertOne(entidade);
         }
 
-        protected List<T> Selecionar()
+        public List<T> Selecionar()
         {
             return _colecao.Find(new BsonDocument()).ToList();
         }
 
-        protected T Selecionar(Guid guid)
+        public T Selecionar(Guid guid)
         {
             return _colecao.Find(e => e.Id == guid).SingleOrDefault();
         }
 
-        protected void Atualizar(T entidade)
+        public void Atualizar(T entidade)
         {
             _colecao.ReplaceOne(e => e.Id == entidade.Id, entidade);
         }
 
-        protected void Excluir(Guid guid)
+        public void Excluir(Guid guid)
         {
             _colecao.DeleteOne(e => e.Id == guid);
         }
